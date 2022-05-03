@@ -17,7 +17,7 @@ Hi! (redirect/forward) = ${user_name}
 <hr/>
 <form action="controller">
     <input type="hidden" name="command" value="logout">
-    <input type="submit" name="logout" value="logOut">
+    <input type="submit" name="logout" value="LogOut">
 </form>
 <hr/>
 <form action="controller">

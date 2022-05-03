@@ -23,22 +23,22 @@ public class UserDaoImpl extends BaseDao<User> implements UserDao {
     @Override
     public boolean insert(User user) {
         return false;
-    }
+    } //TODO сделать функционал метода
 
     @Override
     public boolean delete(User user) {
         return false;
-    }
+    } //TODO сделать функционал метода
 
     @Override
     public List finaAll() {
         return null;
-    }
+    } //TODO сделать функционал метода
 
     @Override
     public User update(User user) {
         return null;
-    }
+    } //TODO сделать функционал метода
 
     @Override
     public boolean authenticate(String login, String password) throws DaoException {

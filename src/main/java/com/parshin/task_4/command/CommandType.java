@@ -7,7 +7,9 @@ public enum CommandType {
     DEFAULT(new DefaultCommand()),
     LOGIN(new LoginCommand()),
     LOGOUT(new LogoutCommand()),
-    ADMIN_PAGE(new AdminPageCommand());
+    ADMIN_PAGE(new AdminPageCommand()),
+    REGISTRATION_PAGE(new RegistrationPageCommand()),
+    REGISTER(new RegisterCommand());
 
     Command command;
 

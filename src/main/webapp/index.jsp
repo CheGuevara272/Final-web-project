@@ -13,10 +13,14 @@
     <br/>
     Password: <input type="password" name="pass" value=""/>
     <br/>
-    <input type="submit" name="sub" value="Push"/>
+    <input type="submit" name="sub" value="LogIn"/>
     <br/>
     ${login_msg}
 </form>
-
+<hr/>
+<form action="controller">
+    <input type="hidden" name="command" value="registration_page"/>
+    <input type="submit" name="sub" value="SignUp"/>
+</form>
 </body>
 </html>

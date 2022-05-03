@@ -19,10 +19,10 @@ public class LoginCommand implements Command {
             if (userService.authenticate(login, password)) {
                 request.setAttribute("user", login);
                 session.setAttribute("user_name", login);
-                page = "pages/main.jsp";
+                page = PagePath.MAIN_PAGE_PATH;
             } else {
                 request.setAttribute("login_msg", "Incorrect login or password");
-                page = "index.jsp";
+                page = PagePath.INDEX_PAGE_PATH;
             }
             session.setAttribute("current_page", page);
         } catch (ServiceException e) {
