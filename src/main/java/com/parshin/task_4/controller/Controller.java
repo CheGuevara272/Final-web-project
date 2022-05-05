@@ -30,12 +30,12 @@ public class Controller extends HttpServlet {
             Router router = command.execute(request);
             switch (router.getRouteType()) {
                 case FORWARD -> {
-                    logger.log(Level.INFO, "forward type. To page :{}", router.getCurrentPage());
+                    logger.log(Level.INFO, "Forward. To page :{}", router.getCurrentPage());
                     RequestDispatcher dispatcher = request.getRequestDispatcher(router.getCurrentPage());
                     dispatcher.forward(request, response);
                 }
                 case REDIRECT -> {
-                    logger.log(Level.INFO, "redirect type. To page :{}", router.getCurrentPage());
+                    logger.log(Level.INFO, "Redirect. To page :{}", router.getCurrentPage());
                     response.sendRedirect(router.getCurrentPage());
                 }
             }
