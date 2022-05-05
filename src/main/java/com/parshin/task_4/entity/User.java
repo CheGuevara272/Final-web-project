@@ -14,9 +14,6 @@ public class User extends AbstractEntity {
     private String phone;
     private String email;
 
-    private User() {
-    }
-
     public User(String login, String password, UserAccessLevel userAccessLevel,
                 String name, String surname, String birthday, String phone, String email) {
         //this.userId = userId;

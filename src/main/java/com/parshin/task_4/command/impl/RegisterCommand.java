@@ -1,16 +1,18 @@
 package com.parshin.task_4.command.impl;
 
 import com.parshin.task_4.command.Command;
+import com.parshin.task_4.command.PagePath;
+import com.parshin.task_4.command.Router;
+import com.parshin.task_4.command.UserAttributeName;
 import com.parshin.task_4.dao.impl.UserDaoImpl;
 import com.parshin.task_4.entity.User;
 import com.parshin.task_4.entity.UserAccessLevel;
 import com.parshin.task_4.exception.CommandException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 
 public class RegisterCommand implements Command {
     @Override
-    public String execute(HttpServletRequest request) throws CommandException {
+    public Router execute(HttpServletRequest request) throws CommandException {
         //int userId = TODO сделать генератор id
         String login = request.getParameter(UserAttributeName.LOGIN_ATTRIBUTE);
         String password = request.getParameter(UserAttributeName.PASSWORD_ATTRIBUTE);
@@ -22,15 +24,16 @@ public class RegisterCommand implements Command {
         String email = request.getParameter(UserAttributeName.EMAIL_ATTRIBUTE);
         //TODO Как лучше сделать валидацию пораметров? Проверку на повторы и т.д.
 
-        User user = new User(login, password, accessLevel, name, surname, birthday, phone, email);
+        User user = new User(login, password, accessLevel, name, surname, birthday, phone, email); //TODO сделать через сервисы
         UserDaoImpl userDao = UserDaoImpl.getInstance();
         String page;
         boolean userAdded = userDao.insert(user);
+        Router router = new Router();
         if (userAdded) {
-            page = PagePath.INDEX_PAGE_PATH;
+            router.setCurrentPage(PagePath.INDEX_PAGE_PATH);
         } else {
-            page = PagePath.REGISTER_PAGE_PATH;
+            router.setCurrentPage(PagePath.REGISTER_PAGE_PATH);
         }
-        return page;
+        return router;
     }
 }

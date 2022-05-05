@@ -47,7 +47,7 @@ public class UserDaoImpl extends BaseDao<User> implements UserDao {
         try (Connection connection = ConnectionPool.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(SELECT_LOGIN_PASSWORD)) {
             statement.setString(1, login);
-            ResultSet resultSet = statement.executeQuery();
+            ResultSet resultSet = statement.executeQuery(); //TODO тоже добавить трай с ресурсами
             String passFromDb;
             if (resultSet.next()) {
                 passFromDb = resultSet.getString(1);
