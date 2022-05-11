@@ -1,8 +1,15 @@
 package com.parshin.task_4.pool;
 
+import com.parshin.task_4.exception.ConnectionPoolException;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Enumeration;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -10,42 +17,40 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ConnectionPool {
+    static Logger logger = LogManager.getLogger();
+    private static final String DEFAULT_POOL_SIZE = "8";
+    private static int POOL_SIZE;
     private static ConnectionPool instance;
+    private static Properties dbProperties;
     private static final AtomicBoolean isInstanceCreated = new AtomicBoolean(false);
     private static final ReentrantLock lock = new ReentrantLock();
-    private BlockingQueue<Connection> free = new LinkedBlockingQueue<>(8);
-    private BlockingQueue<Connection> used = new LinkedBlockingQueue<>(8);
+    private final BlockingQueue<ProxyConnection> freeConnections;
+    private final BlockingQueue<ProxyConnection> usedConnections;
 
-    static {
+    {
+        dbProperties = PropertyLoader.getInstance().loadProperties();
+        POOL_SIZE = Integer.parseInt(dbProperties.getProperty("max_connections", DEFAULT_POOL_SIZE));
+        freeConnections = new LinkedBlockingQueue<>(POOL_SIZE);
+        usedConnections = new LinkedBlockingQueue<>(POOL_SIZE);
         try {
             DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
-            //Class.forName("om.mysql.cj.jdbc.Driver()");
         } catch (SQLException e) {
+            logger.log(Level.ERROR, "Failed to register driver", e);
             throw new ExceptionInInitializerError(e);
         }
     }
 
     private ConnectionPool() {
-        String url = "jdbc:mysql://localhost:3306/library";
-        Properties prop = new Properties();
-        prop.put("user", "root");
-        prop.put("password", "Pa0320JeGe2000");
-//        prop.put("autoReconnect", "true");
-//        prop.put("characterEncoding", "UTF-8");
-//        prop.put("useUnicode", "true");
-//        prop.put("useSSL", "true");
-//        prop.put("useJDBCCompliantTimezoneShift", "true");
-//        prop.put("useLegacyDatetimeCode", "false");
-//        prop.put("serverTimezone", "UTC");
-//        prop.put("serverSslCert", "classpath:server.crt");
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < POOL_SIZE; i++) {
             Connection connection = null;
             try {
-                connection = DriverManager.getConnection(url, prop);
+                connection = DriverManager.getConnection(dbProperties.getProperty("db_url"), dbProperties);
+                ProxyConnection proxyConnection = new ProxyConnection(connection);
+                freeConnections.add(proxyConnection);
             } catch (SQLException e) {
+                logger.log(Level.ERROR, "Failed to create connection", e);
                 throw new ExceptionInInitializerError(e);
             }
-            free.add(connection);
         }
     }
 
@@ -64,35 +69,57 @@ public class ConnectionPool {
         return instance;
     }
 
-    public Connection getConnection() {
-        Connection connection = null;
+    public ProxyConnection getConnection() {
+        ProxyConnection proxyConnection = null;
         try {
-            connection = free.take();
-            used.put(connection);
+            proxyConnection = freeConnections.take();
+            usedConnections.put(proxyConnection);
         } catch (InterruptedException e) {
-            //log
-            Thread.currentThread().interrupt();
+            logger.log(Level.ERROR, "Failed to put used connection.", e);
         }
-        return connection;
+        return proxyConnection;
     }
 
-    // deregister driver
-
-    public void releaseConnection(Connection connection) {
-        try {
-            used.remove(connection);
-            free.put(connection);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    public boolean releaseConnection(Connection connection) {
+        boolean result = false;
+        if (!(connection instanceof ProxyConnection)) {
+            logger.log(Level.ERROR, "incorrect connection!");
+            return false;
         }
+        ProxyConnection proxyConnection = (ProxyConnection) connection;
+        if (usedConnections.remove(proxyConnection)) {
+            try {
+                freeConnections.put(proxyConnection);
+                result = true;
+            } catch (InterruptedException e) {
+                logger.log(Level.WARN, "Failed to put free connection.");
+                Thread.currentThread().interrupt();
+            }
+        }
+        return result;
     }
 
     public void destroyPool() {
         for (int i = 0; i < 8; i++) {
             try {
-                free.take().close();
+                freeConnections.take().close();
             } catch (SQLException | InterruptedException e) {
                 e.printStackTrace();
+            }
+        }
+        deregisterDriver();
+    }
+
+    private void deregisterDriver() {
+        Enumeration<Driver> drivers = DriverManager.getDrivers();
+        while (drivers.hasMoreElements()) {
+            java.sql.Driver driver = drivers.nextElement();
+            try {
+                DriverManager.deregisterDriver(driver);
+            } catch (SQLException e) {
+                logger.log(Level.ERROR, "Failed to deregister driver", e);
+                //throw new ConnectionPoolException("Failed to deregister driver", e);
+                //TODO Надо ли тут прокидывать ошибку дальше?
             }
         }
     }

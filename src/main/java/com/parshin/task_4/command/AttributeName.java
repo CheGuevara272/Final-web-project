@@ -1,6 +1,6 @@
 package com.parshin.task_4.command;
 
-public enum UserAttributeName {
+public enum AttributeName {
     ;
     public static final String USER_ID_ATTRIBUTE = "user_id";
     public static final String LOGIN_ATTRIBUTE = "login";
@@ -11,4 +11,6 @@ public enum UserAttributeName {
     public static final String BIRTHDAY_ATTRIBUTE = "birthday";
     public static final String PHONE_ATTRIBUTE = "phone";
     public static final String EMAIL_ATTRIBUTE = "email";
+    public static final String COMMAND = "command";
+    public static final String ERROR_MESSAGE = "error_message";
 }

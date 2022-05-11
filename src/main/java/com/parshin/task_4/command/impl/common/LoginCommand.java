@@ -1,4 +1,4 @@
-package com.parshin.task_4.command.impl;
+package com.parshin.task_4.command.impl.common;
 
 import com.parshin.task_4.command.Command;
 import com.parshin.task_4.command.PagePath;
@@ -21,7 +21,7 @@ public class LoginCommand implements Command {
             if (userService.authenticate(login, password)) {
                 request.setAttribute("user", login);
                 session.setAttribute("user_name", login);
-                router.setRedirectType();
+                router.setRouteType(Router.RouteType.FORWARD);
                 router.setCurrentPage(PagePath.MAIN_PAGE_PATH);
             } else {
                 request.setAttribute("login_msg", "Incorrect login or password");
@@ -34,4 +34,3 @@ public class LoginCommand implements Command {
         return router;
     }
 }
-// 9:28

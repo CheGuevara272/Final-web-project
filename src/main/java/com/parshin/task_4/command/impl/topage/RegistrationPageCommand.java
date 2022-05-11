@@ -1,4 +1,4 @@
-package com.parshin.task_4.command.impl;
+package com.parshin.task_4.command.impl.topage;
 
 import com.parshin.task_4.command.Command;
 import com.parshin.task_4.command.PagePath;

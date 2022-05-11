@@ -38,8 +38,7 @@ public class Router {
         return routeType;
     }
 
-    public void setRedirectType() {
-        this.routeType = RouteType.REDIRECT;
+    public void setRouteType(RouteType routeType) {
+        this.routeType = routeType;
     }
-
 }

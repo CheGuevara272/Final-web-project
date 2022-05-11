@@ -16,6 +16,6 @@ Servlet name: ${pageContext.errorData.servletName} <br/>
 Status code: ${pageContext.errorData.statusCode} <br/>
 Exception: ${pageContext.exception} <br/>
 <br/><br/><br/>
-Message from exception: ${error_msg}
+Message from exception: ${error_message}
 </body>
 </html>
