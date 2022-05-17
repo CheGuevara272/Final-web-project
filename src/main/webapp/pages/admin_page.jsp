@@ -12,6 +12,5 @@
 </head>
 <body>
 Hello admin
-<c:if test = ""
 </body>
 </html>

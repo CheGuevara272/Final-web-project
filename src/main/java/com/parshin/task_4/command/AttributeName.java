@@ -12,5 +12,9 @@ public enum AttributeName {
     public static final String PHONE_ATTRIBUTE = "phone";
     public static final String EMAIL_ATTRIBUTE = "email";
     public static final String COMMAND = "command";
+
     public static final String ERROR_MESSAGE = "error_message";
+    public static final String USER = "user";
+
+    public static final String LOGIN_MESSAGE = "login_msg";
 }

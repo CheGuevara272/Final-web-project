@@ -100,14 +100,26 @@ public class ConnectionPool {
     }
 
     public void destroyPool() {
-        for (int i = 0; i < 8; i++) {
+        while (!freeConnections.isEmpty()) {
             try {
-                freeConnections.take().close();
-            } catch (SQLException | InterruptedException e) {
-                e.printStackTrace();
+                freeConnections.take().reallyClose();
+                logger.log(Level.INFO, "Free connection is closed");
+            } catch (InterruptedException e) {
+                logger.log(Level.ERROR, "Thread has been interrupted! :{}", e.getMessage());
+                Thread.currentThread().interrupt();
+            }
+        }
+        while (!usedConnections.isEmpty()) {
+            try {
+                freeConnections.take().reallyClose();
+                logger.log(Level.INFO, "Used connection is closed");
+            } catch (InterruptedException e) {
+                logger.log(Level.ERROR, "Thread has been interrupted! :{}", e.getMessage());
+                Thread.currentThread().interrupt();
             }
         }
         deregisterDriver();
+        logger.log(Level.INFO, "ConnectionPool is closed");
     }
 
     private void deregisterDriver() {
@@ -116,10 +128,9 @@ public class ConnectionPool {
             java.sql.Driver driver = drivers.nextElement();
             try {
                 DriverManager.deregisterDriver(driver);
+                logger.log(Level.INFO, "Driver has been deregistered");
             } catch (SQLException e) {
                 logger.log(Level.ERROR, "Failed to deregister driver", e);
-                //throw new ConnectionPoolException("Failed to deregister driver", e);
-                //TODO Надо ли тут прокидывать ошибку дальше?
             }
         }
     }

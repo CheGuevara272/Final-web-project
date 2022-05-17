@@ -1,34 +1,30 @@
 package com.parshin.task_4.entity;
 
-import java.util.Objects;
+import java.util.Calendar;
+import java.sql.Date;
 import java.util.StringJoiner;
 
 public class User extends AbstractEntity {
-    private int userId;
     private String login;
-    private String password;
     private UserAccessLevel userAccessLevel;
     private String name;
     private String surname;
-    private String birthday;
+    private Date birthday;
     private String phone;
     private String email;
 
-    public User(String login, String password, UserAccessLevel userAccessLevel,
-                String name, String surname, String birthday, String phone, String email) {
-        //this.userId = userId;
+    public User(){
+    }
+
+    public User(String login,  UserAccessLevel userAccessLevel, String name,
+                String surname, Date birthday, String phone, String email) {
         this.login = login;
-        this.password = password;
         this.userAccessLevel = userAccessLevel;
         this.name = name;
         this.surname = surname;
         this.birthday = birthday;
         this.phone = phone;
         this.email = email;
-    }
-
-    public int getUserId() {
-        return userId;
     }
 
     public UserAccessLevel getUserAccessLevel() {
@@ -63,14 +59,6 @@ public class User extends AbstractEntity {
         this.name = name;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -79,11 +67,11 @@ public class User extends AbstractEntity {
         this.email = email;
     }
 
-    public String getBirthday() {
+    public Date getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(String birthday) {
+    public void setBirthday(Date birthday) {
         this.birthday = birthday;
     }
 
@@ -99,27 +87,40 @@ public class User extends AbstractEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         User user = (User) o;
-        return userId == user.userId && userAccessLevel == user.userAccessLevel && login.equals(user.login) && surname.equals(user.surname) && name.equals(user.name) && password.equals(user.password) && email.equals(user.email) && birthday.equals(user.birthday) && phone.equals(user.phone);
+
+        if (!login.equals(user.login)) return false;
+        if (userAccessLevel != user.userAccessLevel) return false;
+        if (!name.equals(user.name)) return false;
+        if (!surname.equals(user.surname)) return false;
+        if (!birthday.equals(user.birthday)) return false;
+        if (!phone.equals(user.phone)) return false;
+        return email.equals(user.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, userAccessLevel, login, surname, name, password, email, birthday, phone);
+        int result = login.hashCode();
+        result = 31 * result + userAccessLevel.hashCode();
+        result = 31 * result + name.hashCode();
+        result = 31 * result + surname.hashCode();
+        result = 31 * result + birthday.hashCode();
+        result = 31 * result + phone.hashCode();
+        result = 31 * result + email.hashCode();
+        return result;
     }
 
     @Override
     public String toString() {
         return new StringJoiner(", ", User.class.getSimpleName() + "[", "]")
-                .add("userId=" + userId)
-                .add("userAccessLevel=" + userAccessLevel)
                 .add("login='" + login + "'")
-                .add("lastName='" + surname + "'")
+                .add("userAccessLevel=" + userAccessLevel)
                 .add("name='" + name + "'")
-                .add("password='" + password + "'")
-                .add("Email='" + email + "'")
-                .add("birthday='" + birthday + "'")
-                .add("phoneNumber='" + phone + "'")
+                .add("surname='" + surname + "'")
+                .add("birthday=" + birthday)
+                .add("phone='" + phone + "'")
+                .add("email='" + email + "'")
                 .toString();
     }
 }

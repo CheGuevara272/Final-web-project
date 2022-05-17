@@ -1,8 +1,12 @@
 package com.parshin.task_4.service;
 
-import com.parshin.task_4.exception.DaoException;
+import com.parshin.task_4.entity.User;
 import com.parshin.task_4.exception.ServiceException;
 
+import java.util.Map;
+import java.util.Optional;
+
 public interface UserService {
-    boolean authenticate(String login, String password) throws ServiceException;
+    Optional<User> authenticateUser(String login, String password) throws ServiceException;
+    boolean addUser(Map<String, String> userMap) throws ServiceException;
 }

@@ -1,15 +1,34 @@
 package com.parshin.task_4.pool;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.sql.*;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
 public class ProxyConnection implements Connection {
+    static final Logger logger = LogManager.getLogger();
     private Connection connection;
 
     ProxyConnection(Connection connection) {
         this.connection = connection;
+    }
+
+
+    @Override
+    public void close() throws SQLException {
+        ConnectionPool.getInstance().releaseConnection(this);
+    }
+
+    void reallyClose() {
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            logger.log(Level.ERROR, "Failed to close connection.", e);
+        }
     }
 
     @Override
@@ -50,11 +69,6 @@ public class ProxyConnection implements Connection {
     @Override
     public void rollback() throws SQLException {
         connection.rollback();
-    }
-
-    @Override
-    public void close() throws SQLException {
-        connection.close();
     }
 
     @Override
